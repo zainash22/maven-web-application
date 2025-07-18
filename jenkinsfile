@@ -1,0 +1,36 @@
+node{
+    
+properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5')), pipelineTriggers([pollSCM('* * * * *')])])
+    
+    
+echo "The Job name is: ${env.Job_NAME}" 
+echo "The Build number is: ${env.build-Number}"
+echo "The node name is: ${env.NODE_NAME}"
+echo "The Jenkins URL is: ${env.JENKINS_URL}"
+echo "The Jenkins home is: ${env.JENKINS_HOME}"
+
+def mavenHome = tool name: 'maven3.9.9'
+
+stage('CheckOutCode'){
+git branch: 'development', credentialsId: '5814391f-fac4-4fcb-87f6-4c9b255f405c', url: 'https://github.com/zainash22/maven-web-application.git'
+}
+
+stage('Build'){
+sh "${mavenHome}/bin/mvn clean package"
+}
+/*
+stage('SonarQubeReport'){
+sh "${mavenHome}/bin/mvn clean sonar:sonar"
+}
+
+stage('UploadArtifactsIntonexus'){
+sh "${mavenHome}/bin/mvn clean deploy"    
+}
+
+stage('DeployAppIntoTomcatServer'){
+sshagent(['02bdcbe6-f94f-4898-950f-d8d5fc91d041']) {
+sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.12.205:/opt/apache-tomcat-9.0.104/webapps/"
+}    
+}
+*/
+}
